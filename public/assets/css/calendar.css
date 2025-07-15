@@ -1,0 +1,159 @@
+.calendar
+{
+    display: flex;
+    flex-flow: column;
+}
+
+.calendar .days
+{
+    display: flex;
+    flex-flow: wrap;
+}
+
+.calendar .days .day_num span
+{
+    display: inline-flex;
+    width: 30px;
+    font-size: 14px;
+}
+
+.link
+{
+    color: #fff;
+    text-decoration: none;
+}
+.link:hover
+{
+    color: #fff;
+    text-decoration: none;
+}
+.calendar .days .day_num .event.green
+{
+    background-color: #51ce57;
+    border: 0px;
+}
+.calendar .days .day_num .event.blue
+{
+    background-color: #518fce;
+}
+.calendar .days .day_num .event.red
+{
+    background-color: #ce5151;
+}
+.calendar .days .day_num .event.grey
+{
+    background-color: #7c7c7c;
+}
+
+.calendar .days .day_num .event
+{
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: #f7c30d;
+    color: #fff;
+    word-wrap: break-word;
+}
+
+@media (prefers-color-scheme: light)
+{
+    .calendar .days .day_num.ignore
+    {
+        background-color: #ffffff;
+    }
+
+    .calendar .days .day_num.ignore:hover
+    {
+        background-color: #f1f1f1;
+        cursor: inherit;
+    }
+
+    .calendar .days .day_name
+    {
+        width: calc(100% / 7);
+        border-top: 4px solid #ffa639;
+        border-left: 2px solid #ffa639;
+        border-right: 2px solid #ffa639;
+        border-bottom: 4px solid #ffa639;;
+        padding: 20px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: bold;
+        color: #818589;
+        color: #fff;
+        background-color: #ffb457;
+    }
+
+    .calendar .days .day_num
+    {
+        display: flex;
+        flex-flow: column;
+        width: calc(100% / 7);
+        border-left: 2px solid #ffcf94;
+        border-right: 2px solid #ffcf94;
+        border-bottom: 4px solid #ffcf94;
+        padding: 15px;
+        font-weight: bold;
+        color: #7c878d;
+        cursor: pointer;
+        background-color: #ffefdb;
+    }
+
+    .calendar .days .day_num:hover
+    {
+        background-color: #ffcf94;
+    }
+}
+
+@media (prefers-color-scheme: dark)
+{
+    .calendar .days .day_num.ignore
+    {
+        background-color: #535657;
+    }
+
+    .calendar .days .day_num.ignore:hover
+    {
+        background-color: #5c5e5f;
+        cursor: inherit;
+    }
+
+    .calendar .days .day_name
+    {
+        width: calc(100% / 7);
+        border-top: 4px solid #ffa639;
+        border-left: 2px solid #ffa639;
+        border-right: 2px solid #ffa639;
+        border-bottom: 4px solid #ffa639;;
+        padding: 20px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: bold;
+        color: #818589;
+        color: #fff;
+        background-color: #ffb457;
+    }
+
+    .calendar .days .day_num
+    {
+        display: flex;
+        flex-flow: column;
+        width: calc(100% / 7);
+        border-left: 2px solid #ffb457;
+        border-right: 2px solid #ffb457;
+        border-bottom: 4px solid #ffb457;
+        padding: 15px;
+        font-weight: bold;
+        color: #d6dce0;
+        cursor: pointer;
+        background-color: #ffcf94;
+    }
+
+    .calendar .days .day_num:hover
+    {
+        background-color: #ffb457;
+    }
+}

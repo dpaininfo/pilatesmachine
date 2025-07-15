@@ -1,0 +1,29 @@
+<div class="col-8">
+    <div class="w-75 band mx-auto pt-5">
+        <h1 class="nav-space text-center mb-5 pb-5 dark-text"> Résumer </h1>
+
+        <h2 class="nav-space text-center mb-5 pb-5 dark-text"> Je réserve pour : </h2>
+
+        <table>
+            <?php
+                echo form_open('Suppression'),
+                    csrf_field();
+                echo "<h2>Les séances suivantes ont été supprimées :</h2>";
+                    foreach ($seancesASuppr as $laseance)
+                    {
+                        echo '<h3 class="dark-text">' . $laseance[0] . '</h3>';
+                    }
+
+            ?>
+        </table>
+
+        <?php
+                echo '<div class="mt-5 d-flex justify-content-center">',
+                        '<button name="btnOk" type="submit" class="btn-big btn-orange">',
+                            '<h2> Retour </h2>',
+                        '</button>',
+                '</div>',
+            form_close();
+        ?>
+    </div>
+</div>

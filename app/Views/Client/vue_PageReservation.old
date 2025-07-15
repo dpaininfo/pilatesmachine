@@ -1,0 +1,31 @@
+<div class="col-8">
+    <div class="w-75 band mx-auto pt-5">
+        <h1 class="nav-space text-center mb-5 pb-5 dark-text"> Mes réservation :  </h1>
+
+            <?php
+                $session = session();
+
+                echo '<div class="carte mini-carte-size bg-orange mx-auto">',
+                    '<div>',
+
+                       '<div class="text-center mt-4 mb-3">',
+                            form_open('PageReservation'),
+                                csrf_field(),
+                                form_submit('btnReservations', "Consulter mes réservations", "class='btn btn-light'"),
+                            form_close(),
+                        '</div>',
+                
+
+                
+                        '<div class="text-center">',
+                            form_open('Planning/' . $session->get('dateplanning')),
+                                csrf_field(),
+                                form_submit('btnPlanning', "Effectuer une réservation", "class='btn btn-light'"),
+                            form_close(),
+                        '</div>',
+                    '</div>',
+                '</div>';
+            ?>
+        
+    </div>
+</div>
