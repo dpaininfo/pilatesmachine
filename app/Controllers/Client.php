@@ -390,17 +390,7 @@
             //         $origin = new DateTime(date('Y-m-d', strtotime($date)));
             //         $target = new DateTime(date('Y-m-d', strtotime($this->request->getPost('datefin'))));
             //         $interval = $origin->diff($target);
-
-            //         if (strlen(($interval->format('%a')+1) / 7) > 1)
-            //         {
-            //             $nbinscription = substr((round(($interval->format('%a')+1) / 7, 1)), 0, 1) + 1;
-            //         }
-            //         else
-            //         {
-            //             $nbinscription = ($interval->format('%a')+1) / 7;
-            //         }
-
-            //         //$origin = new DateTime(date('Y-m-d', strtotime($date)));
+            //         $nbinscription = intdiv($interval->format('%a')+1,7);
 
             //         if ($abonnementMachine->NBSEANCESRESTANTES < $nbinscription)
             //         {
@@ -500,10 +490,10 @@
             $data['estinscrit'] = $modinscriptions->EstInscrit($date, $heure);
             $data['ajouter'] = true;
 
-            // if (isset($_POST['btnRepeter']))
-            // {
-            //     $data['bouton'] = 'Repeter';
-            // }
+            if (isset($_POST['btnRepeter']))
+            {
+                $data['bouton'] = 'Repeter';
+            }
             // elseif (isset($_POST['btnDate']))
             // {
             //     $data['bouton'] = 'Date';
@@ -559,6 +549,7 @@
             $modAbonnement = new ModeleAbonnement();
             $seances = $this->request->getPost('seances');
             $data['seances'] = [];
+            $session = session();
 
             if (isset($_POST['btnAnnuler'])||isset($_POST['btnRetour']))
             {
