@@ -27,7 +27,6 @@ $routes->group('', ['filter'=>'filtreclient'], static function($routes){
     $routes->match(['get', 'post'], 'Reservation/(:any)', 'Client::reserver/$1');
     $routes->match(['get', 'post'], 'Reservation/(:any)/(:any)', 'Client::reserver/$1/2');
     $routes->match(['get', 'post'], 'Confirmation', 'Client::validerReservation');
-    //$routes->match(['get', 'post'], 'Suppression', 'Client::supprimerSeances');
     
     $routes->match(['get', 'post'], 'Abonnements', 'Client::abonnement');
 });
