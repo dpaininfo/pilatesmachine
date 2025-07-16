@@ -82,7 +82,7 @@
     
                     '<div class="modal-body white">',
                         '<div class="alert alert-danger mt-3 ms-3 me-3">',
-                            $msg,
+                            $erreur,
                         '</div>',
                     '</div>',
     

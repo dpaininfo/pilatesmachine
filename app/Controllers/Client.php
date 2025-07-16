@@ -131,7 +131,7 @@
 
             if (!$this->request->is('post'))
             {
-                return redirect()->to('../Planning');   
+                return redirect()->to('../Planning/' . $session->get('dateplanning'));   
             }
             else
             {
@@ -280,9 +280,10 @@
             // redirige vers le planning s'il n'y a pas la totalité des paramètres renseignés
             if ($heure == null)
             {
-                return redirect()->to('../Planning');
+                return redirect()->to('../Planning/' . $session->get('dateplanning'));
             }
 
+            // suite initialisation
             $itostring =[1 => '01',2 => '02',3 => '03',4 => '04',5 => '05',6 => '06',7 => '07',8 => '08',9 => '09',10 => '10',11 => '11',12 => '12',13 => '13',14 => '14',15 => '15',16 => '16',17 => '17',18 => '18',19 => '19',20 => '20',21 => '21',22 => '22',23 => '23',24 => '24',25 => '25',26 => '26',27 => '27',28 => '28',29 => '29',30 => '30',31 => '31'];
             $mois = ['January' => 'Janvier', 'February' => 'Fevrier', 'March'  => 'Mars', 'April' => 'Avril', 'May' => 'Mai', 'June' => 'Juin', 'July' => 'Juillet', 'August' => 'Aout', 'September' => 'Septembre', 'October' => 'Octobre', 'November' => 'Novembre', 'December' => 'Decembre'];
             $days = ['Monday' => 'Lundi', 'Tuesday' => 'Mardi', 'Wednesday' => 'Mercredi', 'Thursday' => 'Jeudi', 'Friday' => 'Vendredi', 'Saturday' => 'Samedi', 'Sunday' => 'Dimanche'];
@@ -314,45 +315,27 @@
             // if (date('Y-m-d H:m', strtotime($date.' '.$heure)) <= date('2025-12-25 9:10'))
             // {
             //     $data['erreur'] = 'passe';
-
-            //     return view('Templates/Header', $data)
-            //     . view('Client/vue_Inscription', $data)
-            //     . view('Templates/Footer');
             // }
 
             // //si la séance n'existe pas
             // if ($modSeance_Machine->SeanceExistante($nodays[date('l', strtotime($date))], $heure) == null || (date('F', strtotime($date)) == 'July' || date('F', strtotime($date)) == 'August'))
             // {
             //     $data['erreur'] = 'innexistant';
-
-            //     return view('Templates/Header', $data)
-            //     . view('Client/vue_Inscription', $data)
-            //     . view('Visiteur/vue_Connexion', $data)
-            //     . view('Templates/Footer');
             // }
 
             // //si il n'y a plus de place pour cette séance
             // if ($modinscriptions->GetNombreInscription($date, $heure) != null && $modinscriptions->GetNombreInscription($date, $heure)->NBINSCRIPTION == 8)
             // {
             //     $data['erreur'] = 'places';
-
-            //     return view('Templates/Header', $data)
-            //     . view('Client/vue_Inscription', $data)
-            //     . view('Visiteur/vue_Connexion', $data)
-            //     . view('Templates/Footer');
             // }
 
+            //récup abo
             $abonnementMachine = $modAbonnement->GetAbonnementMachine();
 
             // //si la personneconnecter n'a pas d'abonnement machine
             // if ($abonnementMachine == null)
             // {
             //     $data['erreur'] = 'abonnement';
-
-            //     return view('Templates/Header', $data)
-            //     . view('Client/vue_Inscription', $data)
-            //     . view('Visiteur/vue_Connexion', $data)
-            //     . view('Templates/Footer');
             // }
 
             // $datefinabonnement = new DateTime(date('Y-m-d', strtotime($abonnementMachine->DATEDEBUT)));
@@ -361,65 +344,56 @@
             // if ($datefinabonnement->modify('+'.$abonnementMachine->DUREE.'months')->format('Y-m-d') <= date('Y-m-d'))
             // {
             //     $data['erreur'] = 'expire';
-
-            //     return view('Templates/Header', $data)
-            //     . view('Client/vue_Inscription', $data)
-            //     . view('Visiteur/vue_Connexion', $data)
-            //     . view('Templates/Footer');
             // }
 
-            //si il ne lui reste plus aucune seance disponible
+            //si pas assez de séances sur l'abo
             if ($abonnementMachine->NBSEANCESRESTANTES == 0)
             {
                 $data['erreur'] = 'nbseances';
 
-                return view('Templates/Header', $data)
-                . view('Client/vue_Inscription', $data)
-                . view('Visiteur/vue_Connexion', $data)
-                . view('Templates/Footer');
+                // return view('Templates/Header', $data)
+                // . view('Client/vue_Inscription', $data)
+                // . view('Visiteur/vue_Connexion', $data)
+                // . view('Templates/Footer');
             }
 
-            //si la personne a appuyé sur 's'inscrire'
+            //si la personne a appuyé sur 'S"inscrire" ou "Réserver" pour valider en vue d'enregistrement BD
             if (isset($_POST['btnInscription']))
             {
-            //     //si la date est répétée
-            //     if ($date != null && $this->request->getPost('datefin') != null)
-            //     {
-            //         $data['bouton'] = 'Repeter';
-            
-            //         $origin = new DateTime(date('Y-m-d', strtotime($date)));
-            //         $target = new DateTime(date('Y-m-d', strtotime($this->request->getPost('datefin'))));
-            //         $interval = $origin->diff($target);
-            //         $nbinscription = intdiv($interval->format('%a')+1,7);
+                //si après répétition
+                if ($date != null && $this->request->getPost('datefin') != null)
+                {
+                    $data['bouton'] = 'Repeter';
+                    $origin = new DateTime(date('Y-m-d', strtotime($date)));
+                    $target = new DateTime(date('Y-m-d', strtotime($this->request->getPost('datefin'))));
+                    $interval = $origin->diff($target,false);
+                    //$bool = ($date < $this->request->getPost('datefin'));
+                    //$data['erreur']=$bool;
+                    if ($interval->invert != 1)
+                    {
+                        $nbinscription = intdiv($interval->format('%a'),7)+1;
+                        $data['erreur']=$nbinscription;
+                        if ($abonnementMachine->NBSEANCESRESTANTES < $nbinscription)
+                        {
+                            $data['erreur'] = 'duree';
+                        }
+                        else
+                        {
+                            for ($i = $origin; $i <= $target; $i->modify('+7 day'))
+                            {
+                                $places = $modinscriptions->GetNombreInscription($i->format('Y-m-d'), $heure);
+                                if ($places == null || $places->NBINSCRIPTION < $nbinscriptionsmax)
+                                {
+                                     $data['seances'][] = ['le ' . $days[$i->format('l')] . ' ' . $i->format('d') . ' ' . $mois[$i->format('F')] . ' ' . $i->format('Y') . ' à ' . date('H', strtotime($heure)) . 'h' . date('i', strtotime($heure)), $i->format('Y-m-d'), $heure];
+                                    $data['erreur']="ok3";
+                                }
+                            }
 
-            //         if ($abonnementMachine->NBSEANCESRESTANTES < $nbinscription)
-            //         {
-            //             $data['erreur'] = 'duree';
-
-            //             return view('Templates/Header', $data)
-            //             . view('Client/vue_Inscription', $data)
-            //             . view('Visiteur/vue_Connexion', $data)
-            //             . view('Templates/Footer');
-            //         }
-            //         else
-            //         {
-            //             if ($date < $this->request->getPost('datefin'))
-            //             {
-            //                 for ($i = $origin; $i <= $target; $i->modify('+7 day'))
-            //                 {
-            //                     $places = $modinscriptions->GetNombreInscription($i->format('Y-m-d'), $heure);
-
-            //                     if ($places == null || $places->NBINSCRIPTION < $nbinscriptionsmax)
-            //                     {
-            //                         $data['seances'][] = ['le ' . $days[$i->format('l')] . ' ' . $i->format('d') . ' ' . $mois[$i->format('F')] . ' ' . $i->format('Y') . ' à ' . date('H', strtotime($heure)) . 'h' . date('i', strtotime($heure)), $i->format('Y-m-d'), $heure];
-            //                     }
-            //                 }
-
-            //                 return view('Templates/Header', $data)
-            //                 . view('Client/vue_Confirmation', $data)
-            //                 . view('Visiteur/vue_Connexion', $data)
-            //                 . view('Templates/Footer');
-            //             }
+                            return view('Templates/Header', $data)
+                            . view('Client/vue_Confirmation', $data)
+                            . view('Visiteur/vue_Connexion', $data)
+                            . view('Templates/Footer');
+                        }
             //             else
             //             {
             //                 $data['erreur'] = 'dates';
@@ -429,16 +403,16 @@
             //                 . view('Visiteur/vue_Connexion', $data)
             //                 . view('Templates/Footer');
             //             }
-            //         }
-            //     }
-                //si ce n'est qu'une date fixe
-            //     else
-            //     {
+                   }
+                }
+            //  si après date unique
+                else
+                {
                     $data['bouton'] = 'Date';
 
                     $estinscrit = $modinscriptions->EstInscrit($date, $heure);
 
-            //  pas déjà inscrit à cette séance
+            //  pas déjà inscrit à cette séance : enregistrement dans la BD
             //         if ($estinscrit == null)
             //         {
                         $donneesAInserer = array(
@@ -452,6 +426,7 @@
             //         }
 
             //      modification de la séance du jour ???!!  --> supprimer puis ajouter une nouvelle
+            //      gestion dateheure pour désinscription
             //         elseif ($estinscrit->DATEHEUREDESINSCRIPTION != null)
             //         {
             //             $condition = ['NOABONNEMENT'=>$abonnementMachine->NOABONNEMENT, 'DATESEANCE'=>$date];
@@ -476,9 +451,9 @@
                     ->set($donneesAInserer)
                     ->where($condition)
                     ->update();
-                // }
+                }
 
-                 $data['estinscrit'] = 'now';
+                $data['estinscrit'] = 'now';
 
                 return view('Templates/Header', $data)
                 . view('Client/vue_Inscription', $data)
@@ -601,7 +576,7 @@
                     ->update();
                 }
 
-                return redirect()->to('../Planning');
+                return redirect()->to('../Planning/' . $session->get('dateplanning'));
             }
 
             foreach ($seances as $laseance)
@@ -621,11 +596,11 @@
 
             if ($data['seances'] == null)
             {
-                return redirect()->to('../Planning');
+                return redirect()->to('../Planning/' . $session->get('dateplanning'));
             }
             elseif (!$this->request->is('post'))
             {
-                return redirect()->to('../Planning');
+                return redirect()->to('../Planning/' . $session->get('dateplanning'));
             }
 
             return view('Templates/Header', $data)
