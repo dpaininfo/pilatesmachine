@@ -11,6 +11,7 @@
         protected $returnType = 'object';
         protected $allowedFields = ['NOABONNEMENT', 'NOJOUR', 'HEUREDEBUTSEANCE', 'DATESEANCE', 'DATEHEUREDESINSCRIPTION'];
 
+        // nb d'inscriptions pour une séance donnée
         public function GetNombreInscription($date = null, $heure = null)
         {
             if ($heure == null)
@@ -41,6 +42,7 @@
             // LIMIT 1;
         }
 
+        // la personne est-elle inscrite à la séance ?
         public function EstInscrit($date = null, $heure = null)
         {
             $session = session();
@@ -59,6 +61,7 @@
             // LIMIT 1
         }
 
+        // récupère toutes les séances auxquelles s'est inscrit l'adhérent
         public function GetInscriptions($noadherent = null)
         {
             $session = session();

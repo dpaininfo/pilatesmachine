@@ -310,82 +310,80 @@
             $data['erreur'] = null;
             $data['ajouter'] = false;
 
-            //si la date est passée
-            //if (date('Y-m-d H:m', strtotime($date.' '.$heure)) <= date('Y-m-d H:m'))
+            // si la date est passée
+            if (date('Y-m-d H:m', strtotime($date.' '.$heure)) <= date('Y-m-d H:m'))
             // if (date('Y-m-d H:m', strtotime($date.' '.$heure)) <= date('2025-12-25 9:10'))
-            // {
-            //     $data['erreur'] = 'passe';
-            // }
+            {
+                $data['erreur'] = 'passé';
+            }
 
-            // //si la séance n'existe pas
-            // if ($modSeance_Machine->SeanceExistante($nodays[date('l', strtotime($date))], $heure) == null || (date('F', strtotime($date)) == 'July' || date('F', strtotime($date)) == 'August'))
-            // {
-            //     $data['erreur'] = 'innexistant';
-            // }
+            //si la séance n'existe pas
+            if ($modSeance_Machine->SeanceExistante($nodays[date('l', strtotime($date))], $heure) == null || (date('F', strtotime($date)) == 'July' || date('F', strtotime($date)) == 'August'))
+            {
+                $data['erreur'] = 'inexistant';
+            }
 
-            // //si il n'y a plus de place pour cette séance
-            // if ($modinscriptions->GetNombreInscription($date, $heure) != null && $modinscriptions->GetNombreInscription($date, $heure)->NBINSCRIPTION == 8)
-            // {
-            //     $data['erreur'] = 'places';
-            // }
+            //s'il n'y a plus de place pour cette séance
+            if ($modinscriptions->GetNombreInscription($date, $heure) != null && $modinscriptions->GetNombreInscription($date, $heure)->NBINSCRIPTION == 8)
+            {
+                $data['erreur'] = 'places';
+            }
 
             //récup abo
             $abonnementMachine = $modAbonnement->GetAbonnementMachine();
 
-            // //si la personneconnecter n'a pas d'abonnement machine
-            // if ($abonnementMachine == null)
-            // {
-            //     $data['erreur'] = 'abonnement';
-            // }
+            // si la personne connectée n'a pas d'abonnement machine
+            if ($abonnementMachine == null)
+            {
+                $data['erreur'] = 'abonnement';
+            }
 
-            // $datefinabonnement = new DateTime(date('Y-m-d', strtotime($abonnementMachine->DATEDEBUT)));
+            $datefinabonnement = new DateTime(date('Y-m-d', strtotime($abonnementMachine->DATEDEBUT)));
 
-            // //si le dernier abonnement machine est expirer
-            // if ($datefinabonnement->modify('+'.$abonnementMachine->DUREE.'months')->format('Y-m-d') <= date('Y-m-d'))
-            // {
-            //     $data['erreur'] = 'expire';
-            // }
+            //si l'abonnement est expiré
+            if ($datefinabonnement->modify('+'.$abonnementMachine->DUREE.'months')->format('Y-m-d') <= date('Y-m-d'))
+            {
+                $data['erreur'] = 'expire';
+            }
 
             //si pas assez de séances sur l'abo
             if ($abonnementMachine->NBSEANCESRESTANTES == 0)
             {
                 $data['erreur'] = 'nbseances';
 
-                // return view('Templates/Header', $data)
-                // . view('Client/vue_Inscription', $data)
-                // . view('Visiteur/vue_Connexion', $data)
-                // . view('Templates/Footer');
+            //     // return view('Templates/Header', $data)
+            //     // . view('Client/vue_Inscription', $data)
+            //     // . view('Visiteur/vue_Connexion', $data)
+            //     // . view('Templates/Footer');
             }
 
             //si la personne a appuyé sur 'S"inscrire" ou "Réserver" pour valider en vue d'enregistrement BD
             if (isset($_POST['btnInscription']))
             {
-                //si après répétition
+                // après répétition
                 if ($date != null && $this->request->getPost('datefin') != null)
                 {
                     $data['bouton'] = 'Repeter';
                     $origin = new DateTime(date('Y-m-d', strtotime($date)));
                     $target = new DateTime(date('Y-m-d', strtotime($this->request->getPost('datefin'))));
                     $interval = $origin->diff($target,false);
-                    //$bool = ($date < $this->request->getPost('datefin'));
-                    //$data['erreur']=$bool;
                     if ($interval->invert != 1)
                     {
                         $nbinscription = intdiv($interval->format('%a'),7)+1;
-                        $data['erreur']=$nbinscription;
+                        //si pas assez de séances sur l'abo
                         if ($abonnementMachine->NBSEANCESRESTANTES < $nbinscription)
                         {
-                            $data['erreur'] = 'duree';
+                            $data['erreur'] = 'nbseances2';
                         }
                         else
                         {
                             for ($i = $origin; $i <= $target; $i->modify('+7 day'))
                             {
                                 $places = $modinscriptions->GetNombreInscription($i->format('Y-m-d'), $heure);
-                                if ($places == null || $places->NBINSCRIPTION < $nbinscriptionsmax)
+                                $data['estinscrit'] = $modinscriptions->EstInscrit($i->format('Y-m-d'), $heure);
+                                if (($places == null || $places->NBINSCRIPTION < $nbinscriptionsmax) && $data['estinscrit'] == null)
                                 {
                                      $data['seances'][] = ['le ' . $days[$i->format('l')] . ' ' . $i->format('d') . ' ' . $mois[$i->format('F')] . ' ' . $i->format('Y') . ' à ' . date('H', strtotime($heure)) . 'h' . date('i', strtotime($heure)), $i->format('Y-m-d'), $heure];
-                                    $data['erreur']="ok3";
                                 }
                             }
 
@@ -394,17 +392,18 @@
                             . view('Visiteur/vue_Connexion', $data)
                             . view('Templates/Footer');
                         }
-            //             else
-            //             {
-            //                 $data['erreur'] = 'dates';
+                    }
+                    else
+                    {
+                        $data['erreur'] = 'dates';
 
-            //                 return view('Templates/Header', $data)
-            //                 . view('Client/vue_Inscription', $data)
-            //                 . view('Visiteur/vue_Connexion', $data)
-            //                 . view('Templates/Footer');
-            //             }
-                   }
+        //                 return view('Templates/Header', $data)
+        //                 . view('Client/vue_Inscription', $data)
+        //                 . view('Visiteur/vue_Connexion', $data)
+        //                 . view('Templates/Footer');
+                    }
                 }
+//                }
             //  si après date unique
                 else
                 {
