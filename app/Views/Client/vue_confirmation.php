@@ -8,6 +8,7 @@
             <?php
                 echo form_open('Confirmation'),
                     csrf_field();
+
                     foreach ($seances as $laseance)
                     {
                         echo '<tr class="pt-5">',

@@ -51,7 +51,7 @@
             }
 
             $data['date'] = $date;
-            $data['lesPlaces'] = $modinscriptions->GetNombreInscription($data['date']->format('Y-m'));
+            $data['lesPlaces'] = $modinscriptions->GetLesInscriptions($data['date']->format('Y-m'));
             $data['heureJours'] = $modsce_machine->findall();
 
             $data['connexion'] = $this->Connexion();
@@ -90,6 +90,7 @@
                 if (isset($_POST['btnDeconnection']))
                 {
                     session()->destroy();
+                    $session = null;
                 }
 
                 $data['erreur'] = "";

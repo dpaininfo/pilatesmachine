@@ -12,14 +12,31 @@
         protected $allowedFields = ['NOABONNEMENT', 'NOJOUR', 'HEUREDEBUTSEANCE', 'DATESEANCE', 'DATEHEUREDESINSCRIPTION'];
 
         // nb d'inscriptions pour une séance donnée
+
         public function GetNombreInscription($date = null, $heure = null)
+        {
+            if ($heure == null)
+            {
+                $this->where('DATESEANCE', $date);
+                $count = $this->countAll();
+                return (int)$count;
+            }
+            else
+            {
+                $this->where('DATESEANCE', $date);
+                $this->where('HEUREDEBUTSEANCE', $heure);
+                $count = $this->countAll();
+                return (int)$count;
+            }
+        }
+        // liste les inscriptions pour une séance donnée
+        public function GetLesInscriptions($date = null, $heure = null)
         {
             if ($heure == null)
             {
                 return $this
                 ->select('DATESEANCE, HEUREDEBUTSEANCE, COUNT(NOABONNEMENT) AS NBINSCRIPTION')
-                ->like('DATESEANCE', $date)
-                ->groupBy('DATESEANCE, HEUREDEBUTSEANCE')
+                ->where('DATESEANCE', $date)
                 ->orderBy('DATESEANCE asc, HEUREDEBUTSEANCE asc')
                 ->get()
                 ->getResult();
@@ -28,18 +45,17 @@
             {
                 return $this
                 ->select('DATESEANCE, HEUREDEBUTSEANCE, COUNT(NOABONNEMENT) AS NBINSCRIPTION')
-                ->like('DATESEANCE', $date)
-                ->like('HEUREDEBUTSEANCE', $heure)
-                ->groupBy('DATESEANCE, HEUREDEBUTSEANCE')
+                ->where('DATESEANCE', $date)
+                ->where('HEUREDEBUTSEANCE', $heure)
                 ->orderBy('DATESEANCE asc, HEUREDEBUTSEANCE asc')
                 ->first();
             }
             
-            // SELECT (DATESEANCE, HEUREDEBUTSEANCE, COUNT(NOABONNEMENT) AS NOMBREINSCRIPTION)
-            // WHERE DATESEANCE Like $date->format('Y-m').'%'
-            // GROUP BY (DATESEANCE, HEUREDEBUTSEANCE)
-            // ORDER BY (DATESEANCE, HEUREDEBUTSEANCE)
-            // LIMIT 1;
+        //     // SELECT (DATESEANCE, HEUREDEBUTSEANCE, COUNT(NOABONNEMENT) AS NOMBREINSCRIPTION)
+        //     // WHERE DATESEANCE Like $date->format('Y-m').'%'
+        //     // GROUP BY (DATESEANCE, HEUREDEBUTSEANCE)
+        //     // ORDER BY (DATESEANCE, HEUREDEBUTSEANCE)
+        //     // LIMIT 1;
         }
 
         // la personne est-elle inscrite à la séance ?
@@ -65,7 +81,7 @@
         public function GetInscriptions($noadherent = null)
         {
             $session = session();
-            $condition = ['abn.NOADHERENT'=>$noadherent, 'DATEHEUREDESINSCRIPTION'=>NULL];
+            $condition = ['abn.NOADHERENT'=>$noadherent];
             $ajd = date('y-m-d');
 
             return $this
@@ -82,24 +98,5 @@
             // WHERE 'abn.NOADHERENT' = noadherent
         }
 
-        // public function SeDesinscrire($noadherent = null)
-        // {
-        //     $session = session();
-        //     $condition = ['abn.NOADHERENT'=>$noadherent, 'DATEHEUREDESINSCRIPTION'=>NULL];
-        //     $ajd = date('y-m-d');
-
-        //     return $this
-        //     ->join('abonnement abn', 'icp.NOABONNEMENT = abn.NOABONNEMENT',  'inner')
-        //     ->select('NOJOUR, DATESEANCE, HEUREDEBUTSEANCE')
-        //     ->where($condition)
-        //     ->where('DATESEANCE > ' . $ajd)
-        //     ->orderby('DATESEANCE', 'asc')
-        //     ->get()
-        //     ->getResult();
-
-        //     // SELECT ('HEUREDEBUTSEANCE')
-        //     // INNER JOIN abonnement on (icp.NOABONNEMENT = abn.NOABONNEMENT)
-        //     // WHERE 'abn.NOADHERENT' = noadherent
-        // }
     }
 ?>

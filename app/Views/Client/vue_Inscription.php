@@ -48,7 +48,7 @@
         }
         elseif ($erreur == 'expire')
         {
-                    $msg='Votre abonnement a expiré.';
+                    $msg='Votre abonnement a ou sera expiré à la date voulue.';
         }
         elseif ($erreur == 'places')
         {
@@ -64,9 +64,9 @@
         }
         elseif ($erreur == 'nbseances')
         {
-                    $msg= 'Vous avez épuisé votre nombre de séances, vous ne pouvez plus vous inscrire';
+                    $msg= 'Vous avez épuisé votre nombre de séances';
         }
-        elseif ($erreur == 'duree'|| $erreur == 'nbseances2')
+        elseif ($erreur == 'duree')
         {
                     $msg= "Vous n'avez pas assez de séances restantes sur votre abonnement";
         }
@@ -74,9 +74,9 @@
         {
                     $msg= "Les dates sont incohérentes";
         }
-        elseif ($erreur == 'reservé')
+        else
         {
-                    $msg= "Certaines séances sont déjà réservées";
+                    $msg= "Problème inconnu";
         }
         echo '<div class="modal fade" id="myModal" data-bs-backdrop="false">',
             '<div class="modal-dialog">',
